@@ -1,31 +1,70 @@
-class Scripture
+using System;
+using System.Collections.Generic;
+
+public class Scripture
 {
-    private Refrence _refrence;
-    private List<Word> _words;
-    GetDisplayText()
+    private readonly Reference _reference;
+    private readonly List<Word> _words;
+
+    public Scripture(Reference reference, string text)
     {
-        string displayText = _refrence.GetDisplayText() + "\n";
+        _reference = reference;
+        _words = new List<Word>();
+
+        string[] words = text.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        foreach (string wordText in words)
+        {
+            _words.Add(new Word(wordText));
+        }
+    }
+
+    public string GetDisplayText()
+    {
+        string displayText = _reference.GetDisplayText() + "\n";
+
         foreach (Word word in _words)
         {
             displayText += word.GetDisplayText() + " ";
         }
-        return displayText.Trim();
+
+        return displayText.TrimEnd();
     }
-    HideRandomWords(int count)
+
+    public void Display()
     {
-        Random random = new Random();
-        int hiddenCount = 0;
-        while (hiddenCount < count && hiddenCount < _words.Count)
+        Console.WriteLine(GetDisplayText());
+    }
+
+    public void HideRandomWords(int count)
+    {
+        List<int> availableIndexes = new List<int>();
+
+        for (int i = 0; i < _words.Count; i++)
         {
-            int index = random.Next(_words.Count);
-            if (!_words[index].IsHidden())
+            if (!_words[i].IsHidden())
             {
-                _words[index].Hide();
-                hiddenCount++;
+                availableIndexes.Add(i);
             }
         }
+
+        if (availableIndexes.Count == 0)
+        {
+            return;
+        }
+
+        Random random = new Random();
+        int numberToHide = Math.Min(count, availableIndexes.Count);
+
+        for (int i = 0; i < numberToHide; i++)
+        {
+            int index = random.Next(availableIndexes.Count);
+            int wordIndex = availableIndexes[index];
+            _words[wordIndex].Hide();
+            availableIndexes.RemoveAt(index);
+        }
     }
-    IsCompletelyHidden()
+
+    public bool IsCompletelyHidden()
     {
         foreach (Word word in _words)
         {
@@ -34,6 +73,7 @@ class Scripture
                 return false;
             }
         }
+
         return true;
     }
 }

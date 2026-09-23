@@ -1,9 +1,47 @@
-class Word
+using System;
+
+public class Word
 {
-    private string _text;
+    private readonly string _text;
     private bool _isHidden;
-    Hide()
+
+    public Word(string text)
+    {
+        _text = text;
+        _isHidden = false;
+    }
+
+    public bool IsHidden()
+    {
+        return _isHidden;
+    }
+
+    public void Hide()
     {
         _isHidden = true;
+    }
+
+    public string GetDisplayText()
+    {
+        if (!_isHidden)
+        {
+            return _text;
+        }
+
+        string hiddenText = string.Empty;
+
+        foreach (char character in _text)
+        {
+            if (char.IsLetter(character))
+            {
+                hiddenText += '_';
+            }
+            else
+            {
+                hiddenText += character;
+            }
+        }
+
+        return hiddenText;
     }
 }
